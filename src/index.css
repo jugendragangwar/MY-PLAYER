@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 0 0% 100%;
+    --surface: 210 20% 98%;
+    --surface-2: 210 20% 95%;
+    --border: 210 20% 90%;
+    --text-primary: 222 47% 11%;
+    --text-muted: 215 16% 47%;
+    --accent: 258 90% 66%;
+    --accent-2: 199 100% 55%;
+    --accent-glow: 258 90% 66%;
+    --radius: 12px;
+  }
+
+  .dark {
+    --bg: 222 47% 4%;
+    --surface: 222 47% 8%;
+    --surface-2: 222 47% 12%;
+    --border: 222 47% 18%;
+    --text-primary: 210 40% 98%;
+    --text-muted: 215 16% 65%;
+    --accent: 258 90% 75%;
+    --accent-2: 199 100% 65%;
+    --accent-glow: 258 90% 75%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-player-border;
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-player-bg text-player-text font-display antialiased;
+    background: radial-gradient(ellipse at 20% 50%, hsl(258 90% 95% / 0.8) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, hsl(199 100% 95% / 0.8) 0%, transparent 50%),
+                hsl(var(--bg));
+    background-attachment: fixed;
+    font-feature-settings: 'ss01', 'ss02';
+    min-height: 100vh;
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 3px;
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: hsl(var(--accent));
+  border: 2px solid hsl(var(--bg));
+  box-shadow: 0 0 8px hsl(var(--accent) / 0.6);
+  margin-top: -5.5px;
+  cursor: grab;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+  box-shadow: 0 0 16px hsl(var(--accent) / 0.8);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.3);
+  cursor: grabbing;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 3px;
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: hsl(var(--accent));
+  border: 2px solid hsl(var(--bg));
+  box-shadow: 0 0 8px hsl(var(--accent) / 0.6);
+  cursor: grab;
+  transition: transform 150ms ease;
+}
+
+input[type="range"]:active::-moz-range-thumb {
+  transform: scale(1.3);
+  cursor: grabbing;
+}
+
+input[type="range"].volume-range::-webkit-slider-runnable-track {
+  height: 2px;
+}
+
+input[type="range"].volume-range::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  margin-top: -4px;
+}
+
+input[type="range"].volume-range::-moz-range-track {
+  height: 2px;
+}
+
+input[type="range"].volume-range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--accent) / 0.4);
+}
+
+.range-filled {
+  background: linear-gradient(
+    to right,
+    hsl(var(--accent)) 0%,
+    hsl(var(--accent)) var(--fill-pct, 0%),
+    hsl(var(--border)) var(--fill-pct, 0%),
+    hsl(var(--border)) 100%
+  );
+}
+
+input[type="range"].range-filled::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    hsl(var(--accent)) 0%,
+    hsl(var(--accent)) var(--fill-pct, 0%),
+    hsl(var(--border)) var(--fill-pct, 0%),
+    hsl(var(--border)) 100%
+  );
+}
+
+input[type="range"].range-filled::-moz-range-track {
+  background: linear-gradient(
+    to right,
+    hsl(var(--accent)) 0%,
+    hsl(var(--accent)) var(--fill-pct, 0%),
+    hsl(var(--border)) var(--fill-pct, 0%),
+    hsl(var(--border)) 100%
+  );
+}
+
+.glass-card {
+  background: hsl(var(--surface) / 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in-right 250ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes wave-1 { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+@keyframes wave-2 { 0%, 100% { height: 8px; } 50% { height: 20px; } }
+@keyframes wave-3 { 0%, 100% { height: 14px; } 50% { height: 8px; } }
+@keyframes wave-4 { 0%, 100% { height: 6px; } 50% { height: 18px; } }
+@keyframes wave-5 { 0%, 100% { height: 10px; } 50% { height: 4px; } }
+
+.wave-bar { display: inline-block; width: 3px; border-radius: 999px; background: hsl(var(--accent)); transform-origin: bottom; }
+.wave-bar:nth-child(1) { animation: wave-1 0.8s ease-in-out infinite; }
+.wave-bar:nth-child(2) { animation: wave-2 0.8s ease-in-out 0.1s infinite; }
+.wave-bar:nth-child(3) { animation: wave-3 0.8s ease-in-out 0.2s infinite; }
+.wave-bar:nth-child(4) { animation: wave-4 0.8s ease-in-out 0.15s infinite; }
+.wave-bar:nth-child(5) { animation: wave-5 0.8s ease-in-out 0.05s infinite; }
+
+@keyframes spin-3d {
+  from {
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}
+
+.vinyl-container-3d {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.vinyl-3d-tilt {
+  transform: rotateX(25deg) rotateY(0deg);
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.vinyl-3d-tilt:hover {
+  transform: rotateX(15deg) rotateY(10deg) scale3d(1.05, 1.05, 1.05);
+}
+
+.vinyl-spin {
+  animation: spin-3d 8s linear infinite;
+  transform-style: preserve-3d;
+}
+
+.vinyl-spin-paused {
+  animation-play-state: paused;
+}

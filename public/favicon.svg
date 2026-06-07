@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1026"/>
+      <stop offset="100%" style="stop-color:#0a0d18"/>
+    </linearGradient>
+    <linearGradient id="note-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="blur1"/>
+      <feGaussianBlur stdDeviation="8" result="blur2"/>
+      <feMerge>
+        <feMergeNode in="blur1"/>
+        <feMergeNode in="blur2"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="outer-glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="30" result="blur"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.54
+                                            0 0 0 0 0.36
+                                            0 0 0 0 0.96
+                                            0 0 0 0.6 0" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <clipPath id="round-clip">
+      <rect width="512" height="512" rx="110" ry="110"/>
+    </clipPath>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#bg-grad)"/>
+
+  <!-- Subtle radial highlight -->
+  <radialGradient id="radial-hl" cx="40%" cy="35%" r="55%">
+    <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.12"/>
+    <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0"/>
+  </radialGradient>
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#radial-hl)"/>
+
+  <!-- Glow blob behind note -->
+  <ellipse cx="256" cy="270" rx="120" ry="110" fill="#7c3aed" opacity="0.18" filter="url(#outer-glow)"/>
+
+  <!-- Music note shape -->
+  <g filter="url(#glow)" clip-path="url(#round-clip)">
+    <!-- Note stem + flag -->
+    <path
+      d="M 298 148
+         L 298 318
+         Q 298 358 260 370
+         Q 222 382 210 355
+         Q 198 328 224 312
+         Q 244 300 268 304
+         L 268 198
+         L 380 170
+         L 380 240
+         Q 380 260 358 268
+         Q 338 276 326 258
+         Q 316 244 328 232
+         Q 338 222 358 226
+         L 358 188
+         Z"
+      fill="url(#note-grad)"
+      stroke="none"
+    />
+  </g>
+
+  <!-- Inner shine on note -->
+  <path
+    d="M 298 148 L 298 220 L 358 200 L 358 188 Z"
+    fill="white"
+    opacity="0.12"
+  />
+</svg>
