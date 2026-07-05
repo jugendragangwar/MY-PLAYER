@@ -43,7 +43,9 @@ export function NowPlaying({
       }, 200);
       return () => clearTimeout(timer);
     }
-  }, [track?.albumArt, displayedArt]);
+  }, [track?.albumArt]); // Bug 8 fix: remove displayedArt from deps — it's set
+  // *inside* this effect, so including it would re-trigger the effect after
+  // every update and cause a redundant second animation cycle.
 
   const initials = track?.title
     ? track.title.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()

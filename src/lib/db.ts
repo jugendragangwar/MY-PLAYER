@@ -31,9 +31,16 @@ export async function saveLocalTrack(track: Track, file: File) {
   const localTrack: LocalTrack = {
     id: track.id,
     blob: file,
+    // Bug 10 fix: explicit field assignment instead of { ...track, src: '' }.
+    // The spread pattern included src (a blob URL) before overriding it,
+    // which was fragile and stored unintended data.
     metadata: {
-      ...track,
-      src: '', 
+      id: track.id,
+      title: track.title,
+      artist: track.artist,
+      albumArt: track.albumArt,
+      duration: track.duration,
+      source: track.source,
     },
   };
   await db.put(STORE_NAME, localTrack);

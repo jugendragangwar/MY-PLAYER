@@ -55,7 +55,14 @@ function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
       let newIndex = state.currentIndex;
       if (idx < state.currentIndex) newIndex--;
       else if (idx === state.currentIndex) newIndex = Math.min(newIndex, newTracks.length - 1);
-      return { ...state, tracks: newTracks, currentIndex: Math.max(0, newIndex) };
+      return {
+        ...state,
+        tracks: newTracks,
+        currentIndex: Math.max(0, newIndex),
+        // Bug 5 fix: stop playback when the last track is removed so the
+        // isPlaying effect runs and pauses the audio element.
+        isPlaying: newTracks.length === 0 ? false : state.isPlaying,
+      };
     }
     case 'SET_CURRENT_INDEX':
       return { ...state, currentIndex: action.index, isPlaying: true };
@@ -76,7 +83,13 @@ function playerReducer(state: PlayerState, action: PlayerAction): PlayerState {
       if (state.tracks.length === 0) return state;
       if (state.repeatMode === 'one') return { ...state, isPlaying: true };
       if (state.isShuffle) {
-        const next = Math.floor(Math.random() * state.tracks.length);
+        // Bug 4 fix: keep rolling until we get a different index so shuffle
+        // always actually advances to a new track.
+        if (state.tracks.length === 1) return { ...state, isPlaying: true };
+        let next: number;
+        do {
+          next = Math.floor(Math.random() * state.tracks.length);
+        } while (next === state.currentIndex);
         return { ...state, currentIndex: next, isPlaying: true };
       }
       const next = state.currentIndex + 1;
@@ -118,20 +131,27 @@ export default function AudioPlayer() {
       prevTrackRef.current = trackId;
       audio.loadTrack(currentTrack);
       if (state.isPlaying) {
-        setTimeout(() => audio.play(), 50);
+        const el = audio.audioRef.current;
+        if (el) {
+          const onCanPlay = () => { audio.play(); };
+          // Bug 3 fix: { once: true } auto-removes the listener after it fires.
+          // The returned cleanup removes it if the user skips before canplay
+          // fires, preventing a stale listener from triggering on the next track.
+          el.addEventListener('canplay', onCanPlay, { once: true });
+          return () => el.removeEventListener('canplay', onCanPlay);
+        }
       }
     }
-
   }, [currentTrack?.id]);
 
   useEffect(() => {
-    if (!currentTrack) return;
+    // Bug 5 fix: remove the `currentTrack` guard so we always call pause()
+    // even when the track list is empty (audio element keeps playing otherwise).
     if (state.isPlaying) {
-      audio.play();
+      if (currentTrack) audio.play();
     } else {
       audio.pause();
     }
-
   }, [state.isPlaying]);
 
   useEffect(() => {
@@ -157,9 +177,11 @@ export default function AudioPlayer() {
     }));
   }, [state.volume, state.isShuffle, state.repeatMode]);
 
+  // Bug 7 fix: depend on audio.seek (stable useCallback ref) not the whole
+  // audio object which is a new plain object reference on every render.
   const handleSeek = useCallback((seconds: number) => {
     audio.seek(seconds);
-  }, [audio]);
+  }, [audio.seek]);
 
   useEffect(() => {
     const loadLocal = async () => {
@@ -172,6 +194,12 @@ export default function AudioPlayer() {
   }, []);
 
   const handleRemoveTrack = async (id: string) => {
+    // Bug 6 fix: revoke the blob URL before removing the track to prevent
+    // ObjectURL memory leaks during long sessions.
+    const track = state.tracks.find(t => t.id === id);
+    if (track?.src?.startsWith('blob:')) {
+      URL.revokeObjectURL(track.src);
+    }
     dispatch({ type: 'REMOVE_TRACK', id });
     if (id.startsWith('local-')) {
       await removeLocalTrack(id);

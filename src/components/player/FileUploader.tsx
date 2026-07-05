@@ -113,6 +113,7 @@ export function FileUploader({ onAddTrack }: FileUploaderProps) {
       <input
         ref={inputRef}
         type="file"
+        accept={ACCEPTED}
         multiple
         onChange={(e) => handleFiles(e.target.files)}
         className="hidden"
@@ -120,7 +121,7 @@ export function FileUploader({ onAddTrack }: FileUploaderProps) {
       <input
         ref={folderInputRef}
         type="file"
-
+        accept={ACCEPTED}
         webkitdirectory=""
         directory=""
         onChange={(e) => handleFiles(e.target.files)}

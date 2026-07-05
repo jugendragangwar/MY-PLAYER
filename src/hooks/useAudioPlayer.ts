@@ -6,11 +6,19 @@ interface UseAudioPlayerOptions {
   onError?: () => void;
 }
 
+
 export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  // ✅ Fix 1: Keep latest callbacks in refs so the stable event listeners
+  // (registered once with []) never capture stale closures.
+  const onEndedRef = useRef(options.onEnded);
+  const onErrorRef = useRef(options.onError);
+  useEffect(() => { onEndedRef.current = options.onEnded; }, [options.onEnded]);
+  useEffect(() => { onErrorRef.current = options.onError; }, [options.onError]);
 
   useEffect(() => {
     const audio = new Audio();
@@ -23,11 +31,11 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
     const onPause = () => setIsPlaying(false);
     const onEnded = () => {
       setIsPlaying(false);
-      options.onEnded?.();
+      onEndedRef.current?.(); // always calls the latest callback
     };
     const onError = () => {
       setIsPlaying(false);
-      options.onError?.();
+      onErrorRef.current?.(); // always calls the latest callback
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
@@ -92,6 +100,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions = {}) {
   }, []);
 
   return {
+    audioRef, // exposed so parent can attach one-shot canplay listeners
     play, pause, seek, setVolume, mute, unmute, loadTrack,
     currentTime, duration: duration || 0, isPlaying,
   };
